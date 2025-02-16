@@ -3,7 +3,8 @@ package main
 import (
 	"log"
 	"os"
-	"pasour/internal/infrastracture"
+	"pasour/internal/infrastracture/configs"
+	"pasour/internal/infrastracture/db"
 
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/sqlite3"
@@ -12,8 +13,8 @@ import (
 )
 
 func main() {
-	baseDir := infrastracture.Configs.RootDir
-	db, domainErr := infrastracture.NewDB()
+	baseDir := configs.Configs.RootDir
+	db, domainErr := db.NewDB()
 
 	if domainErr != nil {
 		log.Fatal(domainErr)

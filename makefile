@@ -17,6 +17,5 @@ migrate-up:
 migrate-down:
 	@go run migrations/main.go down
 
-
 tree:
-	@tree -a -I ".ropeproject|.zed|.git"
+	@tree -a -I ".ropeproject|.git|tmp|migrations" | xclip -selection clipboard

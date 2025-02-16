@@ -25,15 +25,15 @@ func (h *UserHandler) SetupRoutes() {
 	})
 }
 
-func signupHandler(w http.ResponseWriter, r *http.Request, userService services.UserService) {
-	cmd := &commands.UserSignUpCommand{}
+func signupHandler(w http.ResponseWriter, r *http.Request, userSrv services.UserService) {
+	cmd := &commands.UserSignUpCmd{}
 
 	if err := utils.ValidateReqBody(r, cmd); err != nil {
 		utils.WriteErrResponse(err, w)
 		return
 	}
 
-	user, err := userService.SignUp(cmd)
+	user, err := userSrv.SignUp(cmd)
 
 	if err != nil {
 		utils.WriteErrResponse(err, w)

@@ -8,19 +8,21 @@ import (
 )
 
 type HttpServer struct {
-	UserService services.UserService
-	Router      *http.ServeMux
+	userSrv  services.UserService
+	TokenSrv services.TokenService
+	Router   *http.ServeMux
 }
 
-func NewHttpServer(userService services.UserService) *HttpServer {
+func NewHttpServer(userSrv services.UserService, tokenSrv services.TokenService) *HttpServer {
 	return &HttpServer{
-		UserService: userService,
-		Router:      http.NewServeMux(),
+		userSrv:  userSrv,
+		TokenSrv: tokenSrv,
+		Router:   http.NewServeMux(),
 	}
 }
 
 func (s *HttpServer) SetupRoutes() {
-	userHandler := handlers.NewUserHandler(s.UserService, s.Router)
+	userHandler := handlers.NewUserHandler(s.userSrv, s.Router)
 	userHandler.SetupRoutes()
 }
 

@@ -6,6 +6,7 @@ import (
 	"pasour/internal/domain/entities"
 	"pasour/internal/domain/errors"
 	"pasour/internal/domain/repos"
+	"pasour/internal/domain/types"
 )
 
 type UserService struct {
@@ -16,10 +17,19 @@ func NewUserService(repo repos.UserRepo) *UserService {
 	return &UserService{repo: repo}
 }
 
-func (userService *UserService) SignUp(cmd *commands.UserSignUpCommand) (*dtos.UserDTO, *errors.DomainErr) {
+func (userService *UserService) FindByUsername(username string) (*dtos.UserDTO, *errors.DomainErr) {
+	user, err := userService.repo.FindByUsername(username)
+	if err != nil {
+		return nil, err
+	}
+
+	return dtos.NewUserDTO(user), nil
+}
+
+func (userService *UserService) SignUp(cmd *commands.UserSignUpCmd) (*dtos.UserDTO, *errors.DomainErr) {
 	existingUser, err := userService.repo.FindByUsername(cmd.Username)
 
-	if err != nil && err.Type != errors.NotFoundErr {
+	if err != nil && err.Type != types.NotFoundErr {
 		return nil, err
 	}
 

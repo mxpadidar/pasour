@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"pasour/internal/domain/errors"
+	"pasour/internal/domain/types"
 )
 
 func RespondJSON(w http.ResponseWriter, status int, payload any) error {
@@ -14,11 +15,11 @@ func RespondJSON(w http.ResponseWriter, status int, payload any) error {
 }
 
 func WriteErrResponse(err *errors.DomainErr, w http.ResponseWriter) {
-	var ErrTypeStatus = map[errors.ErrType]int{
-		errors.ValidationErr: http.StatusBadRequest,
-		errors.NotFoundErr:   http.StatusNotFound,
-		errors.ConflictErr:   http.StatusConflict,
-		errors.InternalErr:   http.StatusInternalServerError,
+	var ErrTypeStatus = map[types.ErrType]int{
+		types.ValidationErr: http.StatusBadRequest,
+		types.NotFoundErr:   http.StatusNotFound,
+		types.ConflictErr:   http.StatusConflict,
+		types.InternalErr:   http.StatusInternalServerError,
 	}
 
 	if statusCode, ok := ErrTypeStatus[err.Type]; ok {

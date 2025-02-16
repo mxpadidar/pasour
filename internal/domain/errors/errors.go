@@ -1,16 +1,9 @@
 package errors
 
-type ErrType int
-
-const (
-	ValidationErr ErrType = iota
-	NotFoundErr
-	ConflictErr
-	InternalErr
-)
+import "pasour/internal/domain/types"
 
 type DomainErr struct {
-	Type    ErrType
+	Type    types.ErrType
 	Message string
 }
 
@@ -20,28 +13,35 @@ func (e *DomainErr) Error() string {
 
 func NewNotFoundErr(errMsg interface{}) *DomainErr {
 	return &DomainErr{
-		Type:    NotFoundErr,
+		Type:    types.NotFoundErr,
 		Message: errMsgToString(errMsg),
 	}
 }
 
 func NewConflictErr(errMsg interface{}) *DomainErr {
 	return &DomainErr{
-		Type:    ConflictErr,
+		Type:    types.ConflictErr,
+		Message: errMsgToString(errMsg),
+	}
+}
+
+func NewUnAuthorizedErr(errMsg interface{}) *DomainErr {
+	return &DomainErr{
+		Type:    types.UnAuthorizedErr,
 		Message: errMsgToString(errMsg),
 	}
 }
 
 func NewValidationErr(errMsg interface{}) *DomainErr {
 	return &DomainErr{
-		Type:    ValidationErr,
+		Type:    types.ValidationErr,
 		Message: errMsgToString(errMsg),
 	}
 }
 
 func NewInternalErr(errMsg interface{}) *DomainErr {
 	return &DomainErr{
-		Type:    InternalErr,
+		Type:    types.InternalErr,
 		Message: errMsgToString(errMsg),
 	}
 }
