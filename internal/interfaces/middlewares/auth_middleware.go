@@ -18,19 +18,19 @@ func AuthMiddleware(next http.Handler, tokenSrv services.TokenService, userSrv s
 
 		token, err := tokenSrv.GetTokenFromHeader(authHeader)
 		if err != nil {
-			utils.WriteErrResponse(err, w)
+			utils.RespondError(w, http.StatusUnauthorized, err)
 			return
 		}
 
 		sub, err := tokenSrv.Decode(token)
 		if err != nil {
-			utils.WriteErrResponse(err, w)
+			utils.RespondError(w, http.StatusUnauthorized, err)
 			return
 		}
 
 		user, err := userSrv.FindByUsername(sub)
 		if err != nil {
-			utils.WriteErrResponse(err, w)
+			utils.RespondError(w, http.StatusUnauthorized, err)
 			return
 		}
 

@@ -1,7 +1,7 @@
 package entities
 
 import (
-	"pasour/internal/domain/errors"
+	"errors"
 	"time"
 )
 
@@ -13,7 +13,7 @@ type User struct {
 	CreatedAt      time.Time
 }
 
-func NewUser(username, password string, isAdmin bool) (*User, *errors.DomainErr) {
+func NewUser(username, password string, isAdmin bool) (*User, error) {
 	// create user
 	user := &User{}
 	if err := user.SetUsername(username); err != nil {
@@ -27,10 +27,10 @@ func NewUser(username, password string, isAdmin bool) (*User, *errors.DomainErr)
 	return user, nil
 }
 
-func (u *User) SetPassword(rawPassword string) *errors.DomainErr {
+func (u *User) SetPassword(rawPassword string) error {
 	// validate password length
 	if len(rawPassword) < 8 {
-		return errors.NewValidationErr("password must be at least 8 characters")
+		return errors.New("invalid password")
 	}
 
 	// hash password
@@ -39,10 +39,10 @@ func (u *User) SetPassword(rawPassword string) *errors.DomainErr {
 	return nil
 }
 
-func (u *User) SetUsername(username string) *errors.DomainErr {
+func (u *User) SetUsername(username string) error {
 	// validate username length
 	if len(username) < 4 {
-		return errors.NewValidationErr("username must be at least 4 characters")
+		return errors.New("invalid username")
 	}
 
 	u.Username = username

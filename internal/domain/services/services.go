@@ -3,17 +3,16 @@ package services
 import (
 	"pasour/internal/domain/commands"
 	"pasour/internal/domain/dtos"
-	"pasour/internal/domain/errors"
 )
 
 type UserService interface {
-	FindByUsername(string) (*dtos.UserDTO, *errors.DomainErr)
-	Authenticate(*commands.AuthCmd) (*dtos.UserDTO, *errors.DomainErr)
-	SignUp(*commands.UserSignUpCmd) (*dtos.UserDTO, *errors.DomainErr)
+	FindByUsername(string) (*dtos.UserDTO, error)
+	Authenticate(*commands.AuthCmd) (*dtos.UserDTO, error)
+	SignUp(*commands.UserSignUpCmd) (*dtos.UserDTO, error)
 }
 
 type TokenService interface {
-	Encode(*commands.TokenEncodeCmd) (*dtos.TokenDTO, *errors.DomainErr)
-	Decode(string) (string, *errors.DomainErr)
-	GetTokenFromHeader(string) (string, *errors.DomainErr)
+	Encode(*commands.TokenEncodeCmd) (*dtos.TokenDTO, error)
+	Decode(string) (string, error)
+	GetTokenFromHeader(string) (string, error)
 }

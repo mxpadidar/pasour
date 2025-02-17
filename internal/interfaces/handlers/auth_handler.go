@@ -30,13 +30,13 @@ func (handler *AuthHandler) authenticateUser(w http.ResponseWriter, r *http.Requ
 	authCmd := &commands.AuthCmd{}
 	err := utils.ValidateReqBody(r, authCmd)
 	if err != nil {
-		utils.WriteErrResponse(err, w)
+		utils.RespondError(w, http.StatusBadRequest, err)
 		return
 	}
 
 	user, err := handler.userSrv.Authenticate(authCmd)
 	if err != nil {
-		utils.WriteErrResponse(err, w)
+		utils.RespondError(w, http.StatusBadRequest, err)
 		return
 	}
 
@@ -46,7 +46,7 @@ func (handler *AuthHandler) authenticateUser(w http.ResponseWriter, r *http.Requ
 
 	token, err := handler.tokenSrv.Encode(encodeCmd)
 	if err != nil {
-		utils.WriteErrResponse(err, w)
+		utils.RespondError(w, http.StatusBadRequest, err)
 		return
 	}
 

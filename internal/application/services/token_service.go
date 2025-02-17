@@ -1,9 +1,9 @@
 package services
 
 import (
+	"errors"
 	"pasour/internal/domain/commands"
 	"pasour/internal/domain/dtos"
-	"pasour/internal/domain/errors"
 	"strings"
 	"time"
 
@@ -27,7 +27,7 @@ func NewTokenService(secret string, tokenDuration time.Duration) *TokenService {
 	}
 }
 
-func (ts *TokenService) Encode(cmd *commands.TokenEncodeCmd) (*dtos.TokenDTO, *errors.DomainErr) {
+func (ts *TokenService) Encode(cmd *commands.TokenEncodeCmd) (*dtos.TokenDTO, error) {
 	now := time.Now()
 	exp := now.Add(ts.TokenDuration)
 	c := claims{
@@ -41,7 +41,7 @@ func (ts *TokenService) Encode(cmd *commands.TokenEncodeCmd) (*dtos.TokenDTO, *e
 	tokenStr := jwt.NewWithClaims(jwt.SigningMethodHS256, c)
 	signedToken, err := tokenStr.SignedString(ts.Secret)
 	if err != nil {
-		return nil, errors.NewInternalErr("error signing token")
+		return nil, err
 	}
 
 	token := dtos.NewTokenDTO(signedToken)
@@ -49,37 +49,37 @@ func (ts *TokenService) Encode(cmd *commands.TokenEncodeCmd) (*dtos.TokenDTO, *e
 
 }
 
-func (ts *TokenService) Decode(token string) (string, *errors.DomainErr) {
+func (ts *TokenService) Decode(token string) (string, error) {
 	keyFunc := func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, errors.NewUnAuthorizedErr("unexpected signing method")
+			return nil, errors.New("invalid token method")
 		}
 		return ts.Secret, nil
 	}
 
 	parsedToken, err := jwt.ParseWithClaims(token, &claims{}, keyFunc)
 	if err != nil || !parsedToken.Valid {
-		return "", errors.NewUnAuthorizedErr("invalid token")
+		return "", errors.New("invalid token")
 	}
 
 	claims, ok := parsedToken.Claims.(*claims)
 	if !ok {
-		return "", errors.NewUnAuthorizedErr("invalid token")
+		return "", errors.New("invalid token claims")
 	}
 
 	return claims.sub, nil
 }
 
-func (ts *TokenService) GetTokenFromHeader(authHeader string) (string, *errors.DomainErr) {
+func (ts *TokenService) GetTokenFromHeader(authHeader string) (string, error) {
 	if authHeader == "" {
-		return "", errors.NewUnAuthorizedErr("Authorization header is required")
+		return "", errors.New("Authorization header is required")
 	}
 	parts := strings.Split(authHeader, " ")
 	if len(parts) != 2 {
-		return "", errors.NewUnAuthorizedErr("Authorization header is invalid")
+		return "", errors.New("Authorization header is invalid")
 	}
 	if parts[0] != "Bearer" {
-		return "", errors.NewUnAuthorizedErr("Authorization header is invalid")
+		return "", errors.New("Authorization header is invalid")
 	}
 
 	return parts[1], nil

@@ -29,14 +29,14 @@ func signupHandler(w http.ResponseWriter, r *http.Request, userSrv services.User
 	cmd := &commands.UserSignUpCmd{}
 
 	if err := utils.ValidateReqBody(r, cmd); err != nil {
-		utils.WriteErrResponse(err, w)
+		utils.RespondError(w, http.StatusBadRequest, err)
 		return
 	}
 
 	user, err := userSrv.SignUp(cmd)
 
 	if err != nil {
-		utils.WriteErrResponse(err, w)
+		utils.RespondError(w, http.StatusInternalServerError, err)
 		return
 	}
 

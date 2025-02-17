@@ -1,8 +1,8 @@
 package utils
 
 import (
+	"fmt"
 	"os"
-	"pasour/internal/domain/errors"
 	"strconv"
 )
 
@@ -10,7 +10,7 @@ type EnvType interface {
 	string | int | bool
 }
 
-func GetEnv[T EnvType](key string, defaultVal T) (value T, err *errors.DomainErr) {
+func GetEnv[T EnvType](key string, defaultVal T) (value T, err error) {
 	env, exists := os.LookupEnv(key)
 	if !exists {
 		return defaultVal, nil
@@ -22,16 +22,16 @@ func GetEnv[T EnvType](key string, defaultVal T) (value T, err *errors.DomainErr
 	case int:
 		val, err := strconv.Atoi(env)
 		if err != nil {
-			return defaultVal, errors.NewValidationErr(err)
+			return defaultVal, fmt.Errorf("invalid integer: %w", err)
 		}
 		return any(val).(T), nil
 	case bool:
 		val, err := strconv.ParseBool(env)
 		if err != nil {
-			return defaultVal, errors.NewValidationErr(err)
+			return defaultVal, fmt.Errorf("invalid boolean: %w", err)
 		}
 		return any(val).(T), nil
 	default:
-		return defaultVal, errors.NewValidationErr("Invalid type")
+		return defaultVal, fmt.Errorf("invalid type")
 	}
 }
