@@ -19,7 +19,7 @@ func NewUserHandler(userService services.UserService, router *http.ServeMux) *Us
 	}
 }
 
-func (h *UserHandler) SetupRoutes() {
+func (h *UserHandler) RegisterRoutes() {
 	h.Router.HandleFunc("POST /signup", func(w http.ResponseWriter, r *http.Request) {
 		signupHandler(w, r, h.UserService)
 	})

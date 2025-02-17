@@ -2,6 +2,7 @@ package services
 
 import (
 	"pasour/internal/domain/commands"
+	"pasour/internal/domain/dtos"
 	"pasour/internal/domain/errors"
 	"strings"
 	"time"
@@ -26,7 +27,7 @@ func NewTokenService(secret string, tokenDuration time.Duration) *TokenService {
 	}
 }
 
-func (ts *TokenService) Encode(cmd *commands.TokenEncodeCmd) (string, *errors.DomainErr) {
+func (ts *TokenService) Encode(cmd *commands.TokenEncodeCmd) (*dtos.TokenDTO, *errors.DomainErr) {
 	now := time.Now()
 	exp := now.Add(ts.TokenDuration)
 	c := claims{
@@ -37,13 +38,14 @@ func (ts *TokenService) Encode(cmd *commands.TokenEncodeCmd) (string, *errors.Do
 		},
 	}
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, c)
-	signedToken, err := token.SignedString(ts.Secret)
+	tokenStr := jwt.NewWithClaims(jwt.SigningMethodHS256, c)
+	signedToken, err := tokenStr.SignedString(ts.Secret)
 	if err != nil {
-		return "", errors.NewInternalErr("error signing token")
+		return nil, errors.NewInternalErr("error signing token")
 	}
 
-	return signedToken, nil
+	token := dtos.NewTokenDTO(signedToken)
+	return token, nil
 
 }
 

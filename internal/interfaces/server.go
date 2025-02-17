@@ -23,7 +23,10 @@ func NewHttpServer(userSrv services.UserService, tokenSrv services.TokenService)
 
 func (s *HttpServer) SetupRoutes() {
 	userHandler := handlers.NewUserHandler(s.userSrv, s.Router)
-	userHandler.SetupRoutes()
+	userHandler.RegisterRoutes()
+
+	authHandler := handlers.NewAuthHandler(s.userSrv, s.TokenSrv, s.Router)
+	authHandler.RegisterRoutes()
 }
 
 func (s *HttpServer) Start(addr string) {

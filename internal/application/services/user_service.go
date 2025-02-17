@@ -26,6 +26,23 @@ func (userService *UserService) FindByUsername(username string) (*dtos.UserDTO, 
 	return dtos.NewUserDTO(user), nil
 }
 
+func (userService *UserService) Authenticate(cmd *commands.AuthCmd) (*dtos.UserDTO, *errors.DomainErr) {
+	user, err := userService.repo.FindByUsername(cmd.Username)
+	if err != nil {
+		return nil, err
+	}
+
+	if !user.CheckPassword(cmd.Password) {
+		return nil, errors.NewUnAuthorizedErr("authentication failed")
+	}
+
+	if cmd.Role == types.RoleAdmin && !user.IsAdmin {
+		return nil, errors.NewUnAuthorizedErr("authentication failed")
+	}
+
+	return dtos.NewUserDTO(user), nil
+}
+
 func (userService *UserService) SignUp(cmd *commands.UserSignUpCmd) (*dtos.UserDTO, *errors.DomainErr) {
 	existingUser, err := userService.repo.FindByUsername(cmd.Username)
 
